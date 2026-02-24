@@ -2,6 +2,10 @@
 <html lang="hu">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="version" content="v7.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <!-- PWA / Web App Meta Tags -->
@@ -1383,5 +1387,71 @@ const LOGO_DATA = '/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAA
 
 init();
 </script>
+
+<script>
+// ============================================================
+// INLINE SERVICE WORKER – automatikus cache törlés új verzióra
+// Változtasd meg a CACHE_VERSION értékét minden új feltöltésnél!
+// ============================================================
+const CACHE_VERSION = 'transokom-v7';
+
+if ('serviceWorker' in navigator) {
+  // Service Worker kódja Blob-ként beágyazva
+  const swCode = `
+    const CACHE_NAME = '${CACHE_VERSION}';
+    
+    self.addEventListener('install', event => {
+      // Azonnal átveszi az irányítást
+      self.skipWaiting();
+    });
+    
+    self.addEventListener('activate', event => {
+      event.waitUntil(
+        caches.keys().then(keys =>
+          Promise.all(
+            keys
+              .filter(key => key !== CACHE_NAME)
+              .map(key => {
+                console.log('[SW] Régi cache törölve:', key);
+                return caches.delete(key);
+              })
+          )
+        ).then(() => self.clients.claim())
+      );
+    });
+    
+    // Network-first stratégia: mindig friss verziót kér
+    self.addEventListener('fetch', event => {
+      event.respondWith(
+        fetch(event.request, { cache: 'no-store' })
+          .catch(() => caches.match(event.request))
+      );
+    });
+  `;
+  
+  const blob = new Blob([swCode], { type: 'application/javascript' });
+  const swUrl = URL.createObjectURL(blob);
+  
+  navigator.serviceWorker.register(swUrl, { scope: './' })
+    .then(reg => {
+      console.log('[SW] Regisztrálva:', reg.scope);
+      // Ha van frissítés, azonnal alkalmazza
+      reg.onupdatefound = () => {
+        const newWorker = reg.installing;
+        newWorker.onstatechange = () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            console.log('[SW] Új verzió – újratöltés...');
+            window.location.reload();
+          }
+        };
+      };
+    })
+    .catch(err => console.log('[SW] Hiba:', err));
+    
+  // Ellenőrzi hogy van-e frissítés minden betöltésnél
+  navigator.serviceWorker.ready.then(reg => reg.update());
+}
+</script>
+
 </body>
 </html>
