@@ -89,7 +89,7 @@
   .nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; flex: 1; padding: 8px 4px; border: none; background: none; color: var(--text2); font-family: 'Barlow', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.3px; transition: color 0.2s; }
   .nav-item.active { color: var(--accent); }
   .nav-item svg { width: 22px; height: 22px; }
-  .nav-center { flex: 1; display: flex; justify-content: center; align-items: center; }
+  .nav-center { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding-bottom: 2px; }
   .fab { width: 56px; height: 56px; border-radius: 50%; background: var(--accent); border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(245,197,24,0.4); margin-top: -24px; transition: transform 0.2s; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 9px; color: #1a1a1a; gap: 1px; }
   .light-mode .fab { box-shadow: 0 4px 16px rgba(139,26,26,0.35); color: #fff; }
   .fab:active { transform: scale(0.95); }
@@ -451,6 +451,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span class="fab-label" data-key="nav_new">ÚJ</span>
       </button>
+      <span id="navAdminLabel" style="display:none;font-size:9px;font-weight:700;color:#9c27b0;letter-spacing:0.5px;margin-top:2px;font-family:'Barlow Condensed',sans-serif;">⚡ ADMIN</span>
     </div>
     <button class="nav-item" onclick="switchTab('fuel',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22V6a2 2 0 012-2h8a2 2 0 012 2v1h1a2 2 0 012 2v5.5a1.5 1.5 0 003 0V9l-3-3"/><rect x="5" y="10" width="8" height="4" rx="1"/></svg>
@@ -531,7 +532,7 @@ let currentLang = 0;
 
 const T = {
   HU: {
-    nav_feed:'Hírek', nav_gallery:'Galéria', nav_new:'ÚJ\nADMIN', nav_fuel:'Üzemanyag', nav_profile:'Profil',
+    nav_feed:'Hírek', nav_gallery:'Galéria', nav_new:'ÚJ', nav_fuel:'Üzemanyag', nav_profile:'Profil',
     type_traffipax:'Traffipax', type_dugo:'Forgalmi\nDugó', type_baleset:'Baleset', type_segitseg:'Segítség', type_admin:'Admin',
     login_sub:'Regisztráció a folytatáshoz.', login_email:'E-mail cím', login_code:'Belépési kód', login_btn:'BELÉPÉS',
     new_report:'Új Bejelentés', type_lbl:'Bejelentés típusa', location_lbl:'Helyszín *', comment_lbl:'Megjegyzés', optional:'(nem kötelező)',
@@ -547,7 +548,7 @@ const T = {
     force_name_sub:'Az admin fiókhoz kötelező megadni a valódi nevet.'
   },
   EN: {
-    nav_feed:'News', nav_gallery:'Gallery', nav_new:'NEW\nADMIN', nav_fuel:'Fuel', nav_profile:'Profile',
+    nav_feed:'News', nav_gallery:'Gallery', nav_new:'NEW', nav_fuel:'Fuel', nav_profile:'Profile',
     type_traffipax:'Speed\nCamera', type_dugo:'Traffic\nJam', type_baleset:'Accident', type_segitseg:'Help', type_admin:'Admin',
     login_sub:'Registration required.', login_email:'E-mail', login_code:'Access code', login_btn:'LOGIN',
     new_report:'New Report', type_lbl:'Report type', location_lbl:'Location *', comment_lbl:'Comment', optional:'(optional)',
@@ -563,7 +564,7 @@ const T = {
     force_name_sub:'A real name is required for the admin account.'
   },
   DE: {
-    nav_feed:'Nachrichten', nav_gallery:'Galerie', nav_new:'NEU\nADMIN', nav_fuel:'Kraftstoff', nav_profile:'Profil',
+    nav_feed:'Nachrichten', nav_gallery:'Galerie', nav_new:'NEU', nav_fuel:'Kraftstoff', nav_profile:'Profil',
     type_traffipax:'Blitzer', type_dugo:'Stau', type_baleset:'Unfall', type_segitseg:'Hilfe', type_admin:'Admin',
     login_sub:'Registrierung erforderlich.', login_email:'E-Mail', login_code:'Zugangscode', login_btn:'ANMELDEN',
     new_report:'Neue Meldung', type_lbl:'Meldungstyp', location_lbl:'Ort *', comment_lbl:'Kommentar', optional:'(optional)',
@@ -579,7 +580,7 @@ const T = {
     force_name_sub:'Ein echter Name ist für das Admin-Konto erforderlich.'
   },
   PL: {
-    nav_feed:'Aktualności', nav_gallery:'Galeria', nav_new:'NOWE\nADMIN', nav_fuel:'Paliwo', nav_profile:'Profil',
+    nav_feed:'Aktualności', nav_gallery:'Galeria', nav_new:'NOWE', nav_fuel:'Paliwo', nav_profile:'Profil',
     type_traffipax:'Fotoradar', type_dugo:'Korek', type_baleset:'Wypadek', type_segitseg:'Pomoc', type_admin:'Admin',
     login_sub:'Wymagana rejestracja.', login_email:'E-mail', login_code:'Kod dostępu', login_btn:'ZALOGUJ',
     new_report:'Nowe Zgłoszenie', type_lbl:'Typ zgłoszenia', location_lbl:'Lokalizacja *', comment_lbl:'Komentarz', optional:'(nieobowiązkowe)',
@@ -839,6 +840,7 @@ function applyAdminUI() {
     document.getElementById('type-admin').style.display = 'flex';
     document.getElementById('adminCodeSection').classList.add('hidden');
     document.getElementById('profileRole').textContent = '⚡ Admin';
+    document.getElementById('navAdminLabel').style.display = 'block';
   } else {
     document.getElementById('app').classList.remove('admin-mode');
     document.getElementById('adminBadge').classList.remove('visible');
@@ -846,6 +848,7 @@ function applyAdminUI() {
     document.getElementById('type-admin').style.display = 'none';
     document.getElementById('adminCodeSection').classList.remove('hidden');
     document.getElementById('profileRole').textContent = 'Transokom Go';
+    document.getElementById('navAdminLabel').style.display = 'none';
   }
 }
 
